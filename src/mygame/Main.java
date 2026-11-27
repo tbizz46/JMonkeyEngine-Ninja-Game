@@ -64,6 +64,7 @@ public class Main extends SimpleApplication {
         game.setSettings(settings);game.setShowSettings(false);game.setPauseOnLostFocus(false);game.start();
     }
     @Override public void simpleInitApp() {
+        ModelImports.configure(assetManager);
         setDisplayFps(false);setDisplayStatView(false);flyCam.setEnabled(false);
         inputManager.setCursorVisible(true);inputManager.deleteMapping(INPUT_MAPPING_EXIT);
         rootNode.attachChild(world);viewPort.setBackgroundColor(new ColorRGBA(.018f,.028f,.075f,1));

@@ -12,6 +12,7 @@ if [ "${1:-}" = "--build" ]; then echo "Build passed."; exit 0; fi
 if [ "${1:-}" = "--test" ]; then
   "$JDK/bin/javac" -cp 'lib/*:build/classes' -d build/classes tests/mygame/*.java
   "$JDK/bin/java" -ea -cp 'lib/*:build/classes' mygame.DuelStateTest
+  "$JDK/bin/java" --enable-native-access=ALL-UNNAMED -Djava.io.tmpdir="$PWD/.runtime" -ea -cp 'lib/*:build/classes:assets' mygame.ModelImportsTest
   exit 0
 fi
 exec "$JDK/bin/java" -XstartOnFirstThread --enable-native-access=ALL-UNNAMED -Djava.io.tmpdir="$PWD/.runtime" -cp 'build/classes:assets:lib/*' mygame.Main "$@"

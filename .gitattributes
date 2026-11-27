@@ -1,0 +1,2 @@
+# Keep published POM metadata byte-for-byte, including upstream whitespace.
+dependencies/monkeywrench/poms/*.pom -whitespace

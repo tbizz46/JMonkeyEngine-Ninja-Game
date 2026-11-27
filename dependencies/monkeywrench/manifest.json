@@ -1,0 +1,213 @@
+[
+  {
+    "file": "lib/MonkeyWrench-1.0.1.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/MonkeyWrench/1.0.1/MonkeyWrench-1.0.1.jar",
+    "sha256": "84117be08e3f66317f7e00e420acfb6f4f3d37830af8812ef03f36ec19409423",
+    "bytes": 85821,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/MonkeyWrench-1.0.1.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/MonkeyWrench/1.0.1/MonkeyWrench-1.0.1.pom",
+    "sha256": "4934cac520ae83136f2335c6c7fb79463b7aff8c371210a57f494feddb459444",
+    "bytes": 4503,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/Heart-9.3.0.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/Heart/9.3.0/Heart-9.3.0.jar",
+    "sha256": "2765dda58ae9a8554080d6169ce376d39d46d009d0384932360d8e832e51825d",
+    "bytes": 356319,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/Heart-9.3.0.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/Heart/9.3.0/Heart-9.3.0.pom",
+    "sha256": "2b420e4a4e1965aeee92f1e7c54978eb814c349a8916826d81a9b0697133589b",
+    "bytes": 1806,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/Wes-0.8.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/Wes/0.8.3/Wes-0.8.3.jar",
+    "sha256": "99fc0712afe7d5e3f692861b5df7ca94f35e8282ef310f12cfc771f248094bb6",
+    "bytes": 84920,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/Wes-0.8.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/Wes/0.8.3/Wes-0.8.3.pom",
+    "sha256": "14683caeecac96968b85b96a0b45481c5dbdde27c10f8132e9107d419dbccead",
+    "bytes": 1796,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/lwjgl-assimp-3.3.6.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-assimp/3.3.6/lwjgl-assimp-3.3.6.jar",
+    "sha256": "2cd29a9422bbc1bec11d49a18c7b289828eea939b66da2573d203a5a69ee8172",
+    "bytes": 265071,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/lwjgl-assimp-3.3.6.pom",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-assimp/3.3.6/lwjgl-assimp-3.3.6.pom",
+    "sha256": "462f25dcf130291725f9bcf116e132a50ba86e11537aa7dcce629be90dd49a76",
+    "bytes": 1404,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/imageio-tga-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-tga/3.15.3/imageio-tga-3.15.3.jar",
+    "sha256": "87e3f8a0de1d4858fa89ae06886e18d1c97e2d0195a6466a17d135791bcf53a3",
+    "bytes": 30377,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/imageio-tga-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-tga/3.15.3/imageio-tga-3.15.3.pom",
+    "sha256": "6f80f24fd2412af0ca4e461873ab13e1d4bfdebeaad180e11db5a14d9041b48e",
+    "bytes": 1860,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/imageio-webp-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-webp/3.15.3/imageio-webp-3.15.3.jar",
+    "sha256": "70d8fe5daddcdebfc3f548014bc8bb00dfee10d082c303e77c0fd5b177cf50b2",
+    "bytes": 81877,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/imageio-webp-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-webp/3.15.3/imageio-webp-3.15.3.pom",
+    "sha256": "c3a25d8372a2ea59c3b954d062ef6448538abf0582d8863e3c2325e412a67e4e",
+    "bytes": 1852,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/imageio-core-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-core/3.15.3/imageio-core-3.15.3.jar",
+    "sha256": "14d96b09384c48484b376127a0338f66875e94a67c99a3e94440a724bf1e0f09",
+    "bytes": 125262,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/imageio-core-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-core/3.15.3/imageio-core-3.15.3.pom",
+    "sha256": "f3681a86b9cad93526ba9844e9711e2570ac295e459e358402de68bafc942253",
+    "bytes": 1800,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/imageio-metadata-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-metadata/3.15.3/imageio-metadata-3.15.3.jar",
+    "sha256": "24cdb4d24b3711026a220fc1c20557c82933662967803faada7c021d7caf6ff5",
+    "bytes": 83633,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/imageio-metadata-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/imageio/imageio-metadata/3.15.3/imageio-metadata-3.15.3.pom",
+    "sha256": "9e2601f31beb1c19703a9c21fabc5d7dbb9773944fd862b198ed5f63e31affed",
+    "bytes": 1373,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/common-lang-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/common/common-lang/3.15.3/common-lang-3.15.3.jar",
+    "sha256": "24454ab8b23d8aaf54bb3a54e2187fdb5d96561905157852bdf75dddb730f426",
+    "bytes": 121976,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/common-lang-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/common/common-lang/3.15.3/common-lang-3.15.3.pom",
+    "sha256": "8d4f31741d7b34d64b454f695ecb2059a3e1e8c9b1b0e7c0d522dd54d3105bfd",
+    "bytes": 998,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/common-io-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/common/common-io/3.15.3/common-io-3.15.3.jar",
+    "sha256": "f5a164b4868ccef6baee5139d99b1b299fcc8f809dec882435b9a8fd61d473d3",
+    "bytes": 92495,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/common-io-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/common/common-io/3.15.3/common-io-3.15.3.pom",
+    "sha256": "69466c4c0a5a642f813f100b8f6c8961bbdfa8d3b5d3ec99cfe6011096ad9c1e",
+    "bytes": 1366,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/common-image-3.15.3.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/common/common-image/3.15.3/common-image-3.15.3.jar",
+    "sha256": "702f6edcbc91046c8a41c15d3a35e19aa3196536507169654370e3467e48c481",
+    "bytes": 79736,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/poms/common-image-3.15.3.pom",
+    "url": "https://repo.maven.apache.org/maven2/com/twelvemonkeys/common/common-image/3.15.3/common-image-3.15.3.pom",
+    "sha256": "c97f512dfd41f884e9244fa0432dec6a6e9e5b974c1365501791ac6d59ecdd14",
+    "bytes": 1310,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "lib/lwjgl-assimp-3.3.6-natives-macos-arm64.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-assimp/3.3.6/lwjgl-assimp-3.3.6-natives-macos-arm64.jar",
+    "sha256": "5782f015d41d0d29bf681c8ad6d46844ad3f6faa5d78c5e76351387ee2c0c010",
+    "bytes": 3060150,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/MonkeyWrench-1.0.1-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/MonkeyWrench/1.0.1/MonkeyWrench-1.0.1-sources.jar",
+    "sha256": "8032d8f4bc667402780ea9cd969f8eb67a1e8ee266f0a4360386d17de5071987",
+    "bytes": 65712,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/MonkeyWrench-1.0.1-javadoc.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/github/stephengold/MonkeyWrench/1.0.1/MonkeyWrench-1.0.1-javadoc.jar",
+    "sha256": "8e0b295d504734dd0c71226ae7250aeda4e733d2449fee1c62b8011367ccba63",
+    "bytes": 109423,
+    "checksum": "Maven Central SHA-1 matched"
+  },
+  {
+    "file": "dependencies/monkeywrench/licenses/MonkeyWrench-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/stephengold/MonkeyWrench/a92c6ee260c0f8db63a16032ba5f60a531ab5d04/LICENSE",
+    "sha256": "fd4c0216a45bc3693cba68e0e3f4a1f52956d9544b1cd1b37bd1a59891ab4c37",
+    "bytes": 1680
+  },
+  {
+    "file": "dependencies/monkeywrench/licenses/Heart-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/stephengold/Heart/9.3.0/license.txt",
+    "sha256": "aafe60a2dc885db36f3a1adc19c108204a381e444bf0a497c7985ee799a47c54",
+    "bytes": 1571
+  },
+  {
+    "file": "dependencies/monkeywrench/licenses/Wes-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/stephengold/Wes/0.8.3/LICENSE",
+    "sha256": "f7f4cfe0fdc18e03bda1304bb9ccdf98a59cc1077bc22077d031462d17af5d77",
+    "bytes": 1947
+  },
+  {
+    "file": "dependencies/monkeywrench/licenses/lwjgl3-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/LWJGL/lwjgl3/3.3.6/LICENSE.md",
+    "sha256": "4c2f770897d0cfda4d9a65bb4d6d6983dccfd57d4c7eb74ea5ded0762cbc0e75",
+    "bytes": 1518
+  },
+  {
+    "file": "dependencies/monkeywrench/licenses/TwelveMonkeys-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/haraldk/TwelveMonkeys/twelvemonkeys-3.15.3/LICENSE.txt",
+    "sha256": "10e1e2688c74b337e0ca9e3a6a02e16319c3ee4cec79b768bca28ab8823ffde2",
+    "bytes": 1516
+  },
+  {
+    "file": "dependencies/monkeywrench/licenses/Assimp-LICENSE.txt",
+    "url": "https://raw.githubusercontent.com/assimp/assimp/v5.4.3/LICENSE",
+    "sha256": "147874443d242b4e2bae97036e26ec9d6b37f706174c1bd5ecfcc8c1294cef51",
+    "bytes": 3791
+  }
+]
