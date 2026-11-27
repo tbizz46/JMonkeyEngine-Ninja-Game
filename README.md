@@ -87,3 +87,13 @@ did, what you expected, and what happened. Work is tracked on project 6.
 When you report issues in our coding sessions, the agent should create or
 update the issue and add it to that board, as described in AGENTS.md.
 This is a session workflow; no GitHub auto-add rule has been configured.
+
+## Importing more 3D models
+
+MonkeyWrench 1.0.1 is installed and enabled for new model imports.
+See [the import guide](dependencies/monkeywrench/README.md) for model paths,
+supported formats, dependencies, and checks. The current ninjas keep
+their existing animation loader.
+
+Run `./package-mac.command` to build the Mac app with the latest source
+and all required libraries. The script keeps a prior app as a backup.
