@@ -1,5 +1,6 @@
 build/
 .runtime/
+.lwjgl/
 dist/
 .DS_Store
 

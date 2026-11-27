@@ -59,7 +59,9 @@ Sound preferences last for the session and survive rematches.
    output format, volume choices, and regeneration command.
 10. **`README.md`**: adds M/N to the controls, describes audio behavior,
     updates the prior no-sound statement, and links to this change list.
-11. **This file**: records the complete change list, validation, usability
+11. **`.gitignore`**: excludes the `.lwjgl/` native extraction cache created
+    by the audio-enabled runtime.
+12. **This file**: records the complete change list, validation, usability
     scope, and known gaps.
 
 ## Verification
@@ -68,10 +70,15 @@ Sound preferences last for the session and survive rematches.
   mute/pause/rematch behavior, simulated no-device behavior, missing audio,
   and decoding all ten WAV files.
 - `./run.command --smoke` passed on the Apple M3. OpenAL initialized, music
-  entered Playing, paused with the game, resumed for rematch, and ten effect
-  commands were played through the native backend. The existing blue/red
+  entered Playing, paused with the game, resumed for rematch, and fight effect
+  cues were played through the native backend. The existing blue/red
   GPU check, kicks, movement, victory, and rematch checks also passed.
-- Packaged-app results are added after the final build check.
+- The rebuilt Mac app passed the same live music/effect/pause/rematch
+  checks. GameAudioTest also passed with its packaged runtime and WAV files.
+- The packaged check caught music continuing during pause. The fix follows
+  actual source status instead of cached status; a regression test covers
+  silencing unexpected playback during pause. The final app check passed.
+- `git diff --cached --check` passed.
 
 The tests verify decoding, routing, and native playback states. They do not
 verify the physical speaker volume or a listener's judgment of the mix.
