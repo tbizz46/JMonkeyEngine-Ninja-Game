@@ -11,6 +11,9 @@ import com.jme3.math.*;
 import com.jme3.scene.*;
 import com.jme3.scene.shape.*;
 import com.jme3.system.AppSettings;
+import com.jme3.system.JmeSystem;
+import com.jme3.audio.AudioContext;
+import com.jme3.audio.Listener;
 import com.jme3.texture.Texture;
 import java.util.Random;
 
@@ -29,6 +32,8 @@ public class Main extends SimpleApplication {
     private final boolean smoke=Boolean.getBoolean("duel.smoke");
     private int smokeStage;
     private UniformRenderCheck uniformRenderCheck;
+    private GameAudio gameAudio;
+    private BitmapText audioHelp;
     private boolean aiSawAttack, aiGuard;
     private class Avatar {
         Node root=new Node(); Spatial model; AnimComposer composer;
@@ -68,11 +73,13 @@ public class Main extends SimpleApplication {
         Main game=new Main(); AppSettings settings=new AppSettings(true);
         settings.setTitle("Night Ninja Duel");settings.setResolution(1280,800);
         settings.setResizable(false);settings.setSamples(4);settings.setVSync(true);
+        // Initialize audio below so an unavailable output device cannot block play.
         settings.setAudioRenderer(null);settings.setFrameRate(60);
         game.setSettings(settings);game.setShowSettings(false);game.setPauseOnLostFocus(false);game.start();
     }
     @Override public void simpleInitApp() {
         ModelImports.configure(assetManager);
+        initializeGameAudio();
         setDisplayFps(false);setDisplayStatView(false);flyCam.setEnabled(false);
         inputManager.setCursorVisible(true);inputManager.deleteMapping(INPUT_MAPPING_EXIT);
         rootNode.attachChild(world);viewPort.setBackgroundColor(new ColorRGBA(.018f,.028f,.075f,1));
@@ -86,20 +93,44 @@ public class Main extends SimpleApplication {
         bind("Forward",KeyInput.KEY_W,KeyInput.KEY_UP);bind("Back",KeyInput.KEY_S,KeyInput.KEY_DOWN);
         bind("Kick",KeyInput.KEY_L);bind("Attack",KeyInput.KEY_J);bind("Guard",KeyInput.KEY_K);bind("Jump",KeyInput.KEY_SPACE);
         bind("Confirm",KeyInput.KEY_RETURN);bind("Pause",KeyInput.KEY_ESCAPE,KeyInput.KEY_P);bind("Quit",KeyInput.KEY_Q);
+        bind("Music",KeyInput.KEY_M);bind("Effects",KeyInput.KEY_N);
         inputManager.addListener((com.jme3.input.controls.ActionListener)(name,down,tpf)->{
+            if(smoke)return; // Keep the automated sequence independent of live keyboard input.
             switch(name) {
                 case "Left":left=down;break;case "Right":right=down;break;case "Guard":guard=down;break;
                 case "Forward":forward=down;break;case "Back":back=down;break;
                 case "Kick":if(down)duel.kick(duel.player);break;
                 case "Attack":if(down)duel.attack(duel.player);break;
                 case "Jump":if(down)duel.jump(duel.player);break;
+                case "Music":if(down)gameAudio.toggleMusic();break;
+                case "Effects":if(down)gameAudio.toggleEffects();break;
                 case "Confirm":if(down){ if(duel.over)resetRound();else if(!duel.started)duel.started=true;else if(duel.paused)duel.paused=false;}break;
                 case "Pause":if(down&&duel.started&&!duel.over){duel.paused=!duel.paused;clearInput();}break;
                 case "Quit":if(down&&(!duel.started||duel.paused||duel.over))stop();break;
             }
-        },"Left","Right","Forward","Back","Kick","Guard","Attack","Jump","Confirm","Pause","Quit");
+        },"Left","Right","Forward","Back","Kick","Guard","Attack","Jump","Music","Effects","Confirm","Pause","Quit");
         // Losing focus pauses the match, so a hidden window cannot cost a round.
         System.out.println("READY: Night Ninja Duel loaded");
+    }
+    private void initializeGameAudio() {
+        try {
+            AppSettings audioSettings=new AppSettings(false);audioSettings.copyFrom(settings);
+            audioSettings.setAudioRenderer(AppSettings.LWJGL_OPENAL);
+            audioRenderer=JmeSystem.newAudioRenderer(audioSettings);
+            if(audioRenderer==null)throw new IllegalStateException("Audio output is not available");
+            audioRenderer.initialize();AudioContext.setAudioRenderer(audioRenderer);
+            listener=new Listener();audioRenderer.setListener(listener);
+            gameAudio=GameAudio.available(assetManager);
+        } catch(RuntimeException|LinkageError failure) {
+            System.err.println("Audio unavailable: "+failure.getMessage());
+            if(audioRenderer!=null)try{audioRenderer.cleanup();}catch(RuntimeException ignored){ }
+            audioRenderer=null;listener=null;AudioContext.setAudioRenderer(null);
+            gameAudio=GameAudio.unavailable();
+        }
+    }
+    @Override public void destroy() {
+        if(gameAudio!=null)gameAudio.close();
+        super.destroy();
     }
     @Override public void loseFocus() { super.loseFocus();if(duel.started&&!duel.over){duel.paused=true;clearInput();} }
     private void clearInput(){left=false;right=false;forward=false;back=false;guard=false;}
@@ -134,13 +165,15 @@ public class Main extends SimpleApplication {
         panel("Blue health track",40,h-104,400,16,new ColorRGBA(.12f,.17f,.23f,1),guiNode);panel("Red health track",w-440,h-104,400,16,new ColorRGBA(.12f,.17f,.23f,1),guiNode);
         pBar=panel("Blue health",40,h-104,400,16,new ColorRGBA(.12f,.65f,1,1),guiNode);eBar=panel("Red health",w-440,h-104,400,16,new ColorRGBA(.95f,.2f,.3f,1),guiNode);
         status=text("",17,white,0,h-150,guiNode);
-        panel("Control strip",0,0,w,54,new ColorRGBA(.025f,.045f,.08f,1),guiNode);
-        help=text("WASD / Arrows  Move    J  Sword    L  Kick    K  Block    SPACE  Jump    ESC  Pause",17,white,0,32,guiNode);centerText(help,w/2);
+        panel("Control strip",0,0,w,76,new ColorRGBA(.025f,.045f,.08f,1),guiNode);
+        help=text("WASD / Arrows  Move    J  Sword    L  Kick    K  Block    SPACE  Jump    ESC  Pause",17,white,0,53,guiNode);centerText(help,w/2);
+        audioHelp=text(gameAudio.help(),14,muted,0,24,guiNode);centerText(audioHelp,w/2);
         panel("Menu panel",w/2-330,h/2-112,660,280,new ColorRGBA(.035f,.065f,.11f,1),overlay);
         center=text("",34,white,0,h/2+94,overlay);centerSmall=text("",18,white,0,h/2+36,overlay);guiNode.attachChild(overlay);
     }
     private void centerText(BitmapText t,float x){t.setLocalTranslation(x-t.getLineWidth()/2,t.getLocalTranslation().y,t.getLocalTranslation().z);}
     private void updateHud(){
+        audioHelp.setText(gameAudio.help());centerText(audioHelp,cam.getWidth()/2);
         pBar.setLocalScale(duel.player.hp/100f,1,1);eBar.setLocalScale(duel.enemy.hp/100f,1,1);
         pName.setText("YOU  /  BLUE     "+duel.player.hp+" HP");eName.setText("CPU  /  RED     "+duel.enemy.hp+" HP");
         status.setText(duel.messageTime>0?duel.message:duel.active()?"Circle your opponent. Get close to kick.":"");centerText(status,cam.getWidth()/2);
@@ -179,6 +212,7 @@ public class Main extends SimpleApplication {
         // Freeze skeletal animation with the same pause state as combat.
         if(duel.paused){blue.composer.setGlobalSpeed(0);red.composer.setGlobalSpeed(0);}
         updateHud();
+        gameAudio.sync(duel);
         if(smoke)smokeTest();
     }
     private void updateArenaCamera(float dt) {
@@ -190,11 +224,14 @@ public class Main extends SimpleApplication {
         cam.lookAt(cameraTarget,Vector3f.UNIT_Y);
     }
     private void smokeTest(){
+        if(!gameAudio.available())throw new AssertionError("Audio output did not initialize");
         if(elapsed>1&&smokeStage==0){
+            if(!gameAudio.musicPlaying())throw new AssertionError("Music did not start");
             duel.started=true;duel.player.x=-1;duel.enemy.x=.6f;
             duel.player.z=duel.enemy.z=2;duel.kick(duel.player);smokeStage++;
         }
         if(elapsed>1.5f&&smokeStage==1){
+            if(gameAudio.effectsPlayed()<3)throw new AssertionError("Fight effects did not play");
             if(duel.enemy.hp!=90||!blue.animation.equals("Kick"))throw new AssertionError("Player kick failed");
             duel.enemy.cooldown=0;duel.enemy.stun=0;duel.player.attack=0;
             duel.enemy.x=duel.player.x+1.6f;duel.kick(duel.enemy);
@@ -209,6 +246,7 @@ public class Main extends SimpleApplication {
             duel.paused=true;System.out.println("SMOKE_KICKS_AND_3D_OK");smokeStage++;
         }
         if(elapsed>3&&smokeStage==3){
+            if(gameAudio.musicPlaying())throw new AssertionError("Music did not pause; game paused="+duel.paused);
             duel.paused=false;duel.enemy.hp=10;
             duel.enemy.x=duel.player.x+1.6f;duel.enemy.z=duel.player.z;
             duel.enemy.attack=0;duel.enemy.cooldown=5;
@@ -219,6 +257,8 @@ public class Main extends SimpleApplication {
             System.out.println("SMOKE_KICK_VICTORY");resetRound();smokeStage++;
         }
         if(elapsed>5){
+            if(!gameAudio.musicPlaying())throw new AssertionError("Music did not resume for rematch");
+            System.out.println("AUDIO_OK: native output, music play/pause/resume, fight effects="+gameAudio.effectsPlayed());
             if(!uniformRenderCheck.passed())throw new AssertionError("Uniform render check did not run");
             if(duel.player.hp!=100||duel.enemy.hp!=100)throw new AssertionError("Rematch failed");
             System.out.println("SMOKE_OK: 3D arena, both kick animations, combat, pause, victory, rematch");stop();

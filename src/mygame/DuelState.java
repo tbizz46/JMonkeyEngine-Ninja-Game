@@ -1,7 +1,16 @@
 package mygame;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+
 /** Combat rules for a bounded 3D arena, independent of rendering and input. */
 public final class DuelState {
+    public enum Event { SWORD, KICK, HIT, BLOCK, JUMP, LAND }
+    private final ArrayDeque<Event> events = new ArrayDeque<>();
+    public List<Event> drainEvents() {
+        List<Event> result=new ArrayList<>(events); events.clear(); return result;
+    }
     public static final float RANGE = 2.5f, ATTACK_TIME = .72f, HIT_TIME = .28f;
     public static final float ARENA_X = 9, ARENA_Z = 5, BODY_GAP = 1.25f;
     public enum Strike {
@@ -33,6 +42,7 @@ public final class DuelState {
     public void reset() {
         player=new Fighter(-4,1); enemy=new Fighter(4,-1);
         started=false; paused=false; over=false; message=""; messageTime=0;
+        events.clear();
     }
     public boolean active() { return started && !paused && !over; }
     public float distance() { return groundDistance(player,enemy); }
@@ -46,10 +56,13 @@ public final class DuelState {
             face(f,f==player?enemy:player);
             f.strike=strike; f.attack=strike.duration;
             f.cooldown=strike.cooldown; f.hit=false;
+            events.add(strike==Strike.SWORD?Event.SWORD:Event.KICK);
         }
     }
     public void jump(Fighter f) {
-        if(active() && f.y==0 && f.attack<=0 && !f.block && f.stun<=0) f.vy=6.6f;
+        if(active() && f.y==0 && f.attack<=0 && !f.block && f.stun<=0) {
+            f.vy=6.6f; events.add(Event.JUMP);
+        }
     }
     public void move(Fighter f, float dx, float dz, float dt) {
         if(active() && f.attack<=0 && f.stun<=0) {
@@ -88,7 +101,8 @@ public final class DuelState {
         for(Fighter f:new Fighter[]{player,enemy}) {
             f.cooldown=Math.max(0,f.cooldown-dt); f.stun=Math.max(0,f.stun-dt);
             if(f.y>0 || f.vy>0) {
-                f.vy-=17*dt; f.y=Math.max(0,f.y+f.vy*dt); if(f.y==0) f.vy=0;
+                f.vy-=17*dt; f.y=Math.max(0,f.y+f.vy*dt);
+                if(f.y==0) { f.vy=0; events.add(Event.LAND); }
             }
             f.attack=Math.max(0,f.attack-dt);
         }
@@ -109,6 +123,7 @@ public final class DuelState {
         }
         boolean blocked=b.block && b.y==0 && b.attack<=0;
         int damage=blocked?strike.blockDamage:strike.damage;
+        events.add(blocked?Event.BLOCK:Event.HIT);
         b.hp=Math.max(0,b.hp-damage); b.stun=blocked?.07f:.17f;
         float push=blocked?.12f:.36f;
         b.x+=a.facingX*push; b.z+=a.facingZ*push; clamp(b);

@@ -26,6 +26,8 @@ Both use the ninja model shipped with the SDK.
 | Escape or P | Pause / resume |
 | Enter | Start, resume, or rematch |
 | Q | Quit from start, pause, or results |
+| M | Toggle music |
+| N | Toggle sound effects |
 
 Get close before you swing. A sword hit does 14 damage; a blocked sword does 3.
 A kick has a shorter reach and does 10 damage; a blocked kick does 2.
@@ -63,7 +65,7 @@ SDK source: https://github.com/jMonkeyEngine/sdk/releases/tag/v3.9.0-stable-sdk2
 Retain upstream asset notices and review each asset's terms before publishing.
 This project includes engine libraries copied from the installed SDK.
 
-This first version has one arena, one computer opponent, and no sound.
+This first version has one arena, one computer opponent, sound effects, and original background music.
 The angled camera tracks the center of the fight.
 It supports a keyboard on macOS Apple Silicon. There is no gamepad or
 multiplayer mode.
@@ -111,3 +113,13 @@ file-by-file list for [issue #4](https://github.com/tbizz46/JMonkeyEngine-Ninja-
 
 Your ninja wears blue; the CPU wears red. These match the existing health
 bars and floor markers. See [issue 6 changes and render evidence](docs/ISSUE_6_UNIFORMS.md).
+
+## Sound and music
+
+The game includes a quiet drum-and-ambience loop and sounds for sword
+swings, kicks, hits, blocks, jumps, landings, round start, and win/lose.
+Press **M** to toggle music or **N** to toggle effects. Current settings
+are shown under the controls. Pause and focus loss pause music and stop
+active effects. Rematch keeps your choices for this session.
+
+See [issue 8 code changes and checks](docs/ISSUE_8_AUDIO_CHANGES.md).
