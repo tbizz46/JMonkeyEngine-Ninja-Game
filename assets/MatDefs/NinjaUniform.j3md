@@ -1,0 +1,33 @@
+MaterialDef Ninja Uniform {
+    MaterialParameters {
+        Texture2D DiffuseMap
+        Color UniformColor
+        Boolean UseMaterialColors
+        Color Ambient
+        Color Diffuse
+        Color Specular
+        Float Shininess : 24
+        Float AlphaDiscardThreshold
+        Int NumberOfBones
+        Matrix4Array BoneMatrices
+    }
+    Technique {
+        LightMode MultiPass
+        VertexShader GLSL150 GLSL100: Common/MatDefs/Light/Lighting.vert
+        FragmentShader GLSL150 GLSL100: Shaders/NinjaUniform.frag
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+            WorldViewMatrix
+            ViewMatrix
+            CameraPosition
+            WorldMatrix
+            ViewProjectionMatrix
+        }
+        Defines {
+            DIFFUSEMAP : DiffuseMap
+            MATERIAL_COLORS : UseMaterialColors
+            NUM_BONES : NumberOfBones
+        }
+    }
+}

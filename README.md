@@ -4,7 +4,7 @@ Source: https://github.com/tbizz46/JMonkeyEngine-Ninja-Game
 
 Issues and work board: https://github.com/users/tbizz46/projects/6/views/1
 
-A side-view sword fight in a moonlit field. You fight a computer ninja.
+A 3D arena fight in a moonlit field. Move around a computer ninja and use swords, kicks, blocks, and jumps.
 This is a first playable game, built with jMonkeyEngine 3.9.0.
 
 ## Play
@@ -18,15 +18,22 @@ Both use the ninja model shipped with the SDK.
 
 | Key | Action |
 | --- | --- |
-| A / D or arrow keys | Move |
-| J | Swing sword |
+| W / A / S / D or arrow keys | Move across the 3D arena |
+| J | Two-handed sword strike |
+| L | Kick |
 | K (hold) | Block |
 | Space | Jump |
+| F + direction | Flip in that WASD/arrow direction |
+| F alone | Flip in the current facing direction |
 | Escape or P | Pause / resume |
 | Enter | Start, resume, or rematch |
 | Q | Quit from start, pause, or results |
+| M | Toggle music |
+| N | Toggle sound effects |
 
-Get close before you swing. A hit does 14 damage. A blocked hit does 3.
+Get close before you swing. A sword hit does 14 damage; a blocked sword does 3.
+A kick has a shorter reach and does 10 damage; a blocked kick does 2.
+Both ninjas turn toward each other. You can move around a strike to dodge it.
 The first ninja to reach zero health loses. Enter starts a fresh round.
 Leaving the window pauses the match.
 
@@ -60,7 +67,8 @@ SDK source: https://github.com/jMonkeyEngine/sdk/releases/tag/v3.9.0-stable-sdk2
 Retain upstream asset notices and review each asset's terms before publishing.
 This project includes engine libraries copied from the installed SDK.
 
-This first version has one arena, one computer opponent, and no sound.
+This first version has one arena, one computer opponent, sound effects, and original background music.
+The angled camera tracks the center of the fight.
 It supports a keyboard on macOS Apple Silicon. There is no gamepad or
 multiplayer mode.
 
@@ -97,3 +105,32 @@ their existing animation loader.
 
 Run `./package-mac.command` to build the Mac app with the latest source
 and all required libraries. The script keeps a prior app as a backup.
+
+## 3D arena and kicking change list
+
+See [all code changes and checks](docs/3D_ARENA_KICKS_CHANGES.md) for the
+file-by-file list for [issue #4](https://github.com/tbizz46/JMonkeyEngine-Ninja-Game/issues/4).
+
+## Ninja uniform colors
+
+Your ninja wears blue; the CPU wears red. These match the existing health
+bars and floor markers. See [issue 6 changes and render evidence](docs/ISSUE_6_UNIFORMS.md).
+
+## Sound and music
+
+The game includes a quiet drum-and-ambience loop and sounds for sword
+swings, kicks, hits, blocks, jumps, landings, round start, and win/lose.
+Press **M** to toggle music or **N** to toggle effects. Current settings
+are shown under the controls. Pause and focus loss pause music and stop
+active effects. Rematch keeps your choices for this session.
+
+See [issue 8 code changes and checks](docs/ISSUE_8_AUDIO_CHANGES.md).
+
+## Two-handed swords and directional flips
+
+Both ninjas now use a two-handed sword strike. Hold a WASD/arrow direction
+and press F to flip that way. F without a direction follows current facing.
+The flip uses the bundled backflip animation, travels a fixed distance,
+and has a short cooldown. You can pause it and resume it.
+
+See [issue 10 code changes, checks, and images](docs/ISSUE_10_FIGHT_FEATURES.md).
