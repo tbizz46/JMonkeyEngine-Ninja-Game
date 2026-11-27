@@ -2,6 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 JDK="../jMonkeyEngine SD.app/Contents/Home"
+mkdir -p .runtime/tmp
+export TMPDIR="$PWD/.runtime/tmp"
 ./run.command --build
 mkdir -p dist
 stage=$(mktemp -d "$PWD/dist/.package-XXXXXX")
@@ -13,6 +15,7 @@ echo "Building the Mac app..."
 "$JDK/bin/jpackage" --type app-image --input "$stage/input" \
   --main-jar night-ninja-duel.jar --main-class mygame.Main \
   --name "Night Ninja Duel" --dest "$stage/output" --runtime-image "$JDK" \
+  --temp "$stage/temp" \
   --java-options '-XstartOnFirstThread' \
   --java-options '--enable-native-access=ALL-UNNAMED' \
   --mac-package-identifier com.terenceboyce.nightninjaduel
