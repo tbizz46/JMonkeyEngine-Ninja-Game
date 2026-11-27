@@ -4,7 +4,7 @@ Source: https://github.com/tbizz46/JMonkeyEngine-Ninja-Game
 
 Issues and work board: https://github.com/users/tbizz46/projects/6/views/1
 
-A side-view sword fight in a moonlit field. You fight a computer ninja.
+A 3D arena fight in a moonlit field. Move around a computer ninja and use swords, kicks, blocks, and jumps.
 This is a first playable game, built with jMonkeyEngine 3.9.0.
 
 ## Play
@@ -18,15 +18,18 @@ Both use the ninja model shipped with the SDK.
 
 | Key | Action |
 | --- | --- |
-| A / D or arrow keys | Move |
+| W / A / S / D or arrow keys | Move across the 3D arena |
 | J | Swing sword |
+| L | Kick |
 | K (hold) | Block |
 | Space | Jump |
 | Escape or P | Pause / resume |
 | Enter | Start, resume, or rematch |
 | Q | Quit from start, pause, or results |
 
-Get close before you swing. A hit does 14 damage. A blocked hit does 3.
+Get close before you swing. A sword hit does 14 damage; a blocked sword does 3.
+A kick has a shorter reach and does 10 damage; a blocked kick does 2.
+Both ninjas turn toward each other. You can move around a strike to dodge it.
 The first ninja to reach zero health loses. Enter starts a fresh round.
 Leaving the window pauses the match.
 
@@ -61,6 +64,7 @@ Retain upstream asset notices and review each asset's terms before publishing.
 This project includes engine libraries copied from the installed SDK.
 
 This first version has one arena, one computer opponent, and no sound.
+The angled camera tracks the center of the fight.
 It supports a keyboard on macOS Apple Silicon. There is no gamepad or
 multiplayer mode.
 
@@ -97,3 +101,8 @@ their existing animation loader.
 
 Run `./package-mac.command` to build the Mac app with the latest source
 and all required libraries. The script keeps a prior app as a backup.
+
+## 3D arena and kicking change list
+
+See [all code changes and checks](docs/3D_ARENA_KICKS_CHANGES.md) for the
+file-by-file list for [issue #4](https://github.com/tbizz46/JMonkeyEngine-Ninja-Game/issues/4).
