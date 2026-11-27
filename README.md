@@ -106,3 +106,8 @@ and all required libraries. The script keeps a prior app as a backup.
 
 See [all code changes and checks](docs/3D_ARENA_KICKS_CHANGES.md) for the
 file-by-file list for [issue #4](https://github.com/tbizz46/JMonkeyEngine-Ninja-Game/issues/4).
+
+## Ninja uniform colors
+
+Your ninja wears blue; the CPU wears red. These match the existing health
+bars and floor markers. See [issue 6 changes and render evidence](docs/ISSUE_6_UNIFORMS.md).

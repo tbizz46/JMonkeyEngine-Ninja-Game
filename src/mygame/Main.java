@@ -28,12 +28,14 @@ public class Main extends SimpleApplication {
     private Node overlay=new Node("Start and pause panel");
     private final boolean smoke=Boolean.getBoolean("duel.smoke");
     private int smokeStage;
+    private UniformRenderCheck uniformRenderCheck;
     private boolean aiSawAttack, aiGuard;
     private class Avatar {
         Node root=new Node(); Spatial model; AnimComposer composer;
         String animation="";
-        Avatar(String name, ColorRGBA color) {
+        Avatar(String name, ColorRGBA color, boolean player) {
             root.setName(name); model=assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
+            NinjaUniform.apply(assetManager, model, player);
             model.setLocalScale(.0162f); root.attachChild(model);
             composer=findComposer(model);
             if(composer==null) throw new IllegalStateException("Ninja animation is missing");
@@ -78,7 +80,8 @@ public class Main extends SimpleApplication {
         cam.setFrustumPerspective(43,cam.getWidth()/(float)cam.getHeight(),.1f,180);
         rootNode.addLight(new AmbientLight(new ColorRGBA(.42f,.47f,.68f,1)));
         DirectionalLight moon=new DirectionalLight(new Vector3f(-.4f,-1,-.6f).normalizeLocal(),new ColorRGBA(.75f,.82f,1,1));rootNode.addLight(moon);
-        createField();blue=new Avatar("Blue ninja / You",new ColorRGBA(.2f,.75f,1,1));red=new Avatar("Red ninja / CPU",new ColorRGBA(1,.3f,.35f,1));
+        createField();blue=new Avatar("Blue ninja / You",new ColorRGBA(.2f,.75f,1,1),true);red=new Avatar("Red ninja / CPU",new ColorRGBA(1,.3f,.35f,1),false);
+        if(smoke){uniformRenderCheck=new UniformRenderCheck(cam,blue.root,red.root);viewPort.addProcessor(uniformRenderCheck);}
         createHud(); bind("Left",KeyInput.KEY_A,KeyInput.KEY_LEFT);bind("Right",KeyInput.KEY_D,KeyInput.KEY_RIGHT);
         bind("Forward",KeyInput.KEY_W,KeyInput.KEY_UP);bind("Back",KeyInput.KEY_S,KeyInput.KEY_DOWN);
         bind("Kick",KeyInput.KEY_L);bind("Attack",KeyInput.KEY_J);bind("Guard",KeyInput.KEY_K);bind("Jump",KeyInput.KEY_SPACE);
@@ -216,6 +219,7 @@ public class Main extends SimpleApplication {
             System.out.println("SMOKE_KICK_VICTORY");resetRound();smokeStage++;
         }
         if(elapsed>5){
+            if(!uniformRenderCheck.passed())throw new AssertionError("Uniform render check did not run");
             if(duel.player.hp!=100||duel.enemy.hp!=100)throw new AssertionError("Rematch failed");
             System.out.println("SMOKE_OK: 3D arena, both kick animations, combat, pause, victory, rematch");stop();
         }
