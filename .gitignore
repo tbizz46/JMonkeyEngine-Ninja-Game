@@ -1,0 +1,11 @@
+build/
+.runtime/
+dist/
+.DS_Store
+
+# Local settings and credentials
+.env
+.env.*
+!.env.example
+nbproject/private/
+*.log

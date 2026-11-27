@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="NightNinjaDuel" default="compile" basedir=".">
+ <target name="compile"><exec executable="/bin/bash" failonerror="true"><arg value="run.command"/><arg value="--build"/></exec></target>
+ <target name="run"><exec executable="/bin/bash" failonerror="true"><arg value="run.command"/></exec></target>
+ <target name="test"><exec executable="/bin/bash" failonerror="true"><arg value="run.command"/><arg value="--test"/></exec></target>
+</project>
