@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.epagagames</groupId>
+  <artifactId>particlemonkey</artifactId>
+  <version>1.1.0</version>
+  <name>Particlemonkey</name>
+  <description>A particle library for the jmonkey engine</description>
+  <url>https://github.com/Jeddic/particlemonkey</url>
+  <licenses>
+    <license>
+      <name>New BSD (3-clause) License</name>
+      <url>https://github.com/Jeddic/particlemonkey/blob/master/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Greg Hoffman</name>
+    </developer>
+  </developers>
+  <scm>
+    <url>https://github.com/Jeddic/particlemonkey</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.jmonkeyengine</groupId>
+      <artifactId>jme3-core</artifactId>
+      <version>3.3.2-stable</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jmonkeyengine</groupId>
+      <artifactId>jme3-effects</artifactId>
+      <version>3.3.2-stable</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>
