@@ -14,6 +14,8 @@ if [ "${1:-}" = "--test" ]; then
   "$JDK/bin/java" -ea -cp 'lib/*:build/classes' mygame.DuelStateTest
   "$JDK/bin/java" --enable-native-access=ALL-UNNAMED -Djava.io.tmpdir="$PWD/.runtime" -ea -cp 'lib/*:build/classes:assets' mygame.ModelImportsTest
   "$JDK/bin/java" -ea -cp 'lib/*:build/classes:assets' mygame.GameAudioTest
+  "$JDK/bin/java" -ea -cp 'lib/*:build/classes:assets' mygame.NinjaCombatPoseTest
+  "$JDK/bin/java" -ea -cp 'lib/*:build/classes' mygame.FlipTest
   exit 0
 fi
 exec "$JDK/bin/java" -XstartOnFirstThread --enable-native-access=ALL-UNNAMED -Djava.io.tmpdir="$PWD/.runtime" -cp 'build/classes:assets:lib/*' mygame.Main "$@"

@@ -24,6 +24,8 @@ final class UniformRenderCheck implements SceneProcessor {
     private RenderManager renderManager;
     private int frames;
     private boolean passed;
+    private String pendingEvidence;
+    void captureEvidence(String file) { pendingEvidence=file; }
 
     UniformRenderCheck(Camera camera, Spatial player, Spatial cpu) {
         this.camera=camera; this.player=player; this.cpu=cpu;
@@ -37,19 +39,22 @@ final class UniformRenderCheck implements SceneProcessor {
     @Override public void setProfiler(AppProfiler profiler) { }
     @Override public void cleanup() { renderManager=null; }
     @Override public void postFrame(FrameBuffer output) {
-        if(passed || ++frames<8) return;
+        if(passed&&pendingEvidence==null)return;
+        if(!passed&&++frames<8)return;
         ByteBuffer pixels=BufferUtils.createByteBuffer(camera.getWidth()*camera.getHeight()*4);
         renderManager.getRenderer().readFrameBufferWithFormat(output,pixels,Image.Format.RGBA8);
+        if(pendingEvidence!=null){saveEvidence(pixels,pendingEvidence);pendingEvidence=null;}
+        if(passed)return;
         int blue=countUniformPixels(pixels,player,true);
         int red=countUniformPixels(pixels,cpu,false);
         if(blue<12 || red<12) {
             throw new AssertionError("Uniform render check failed: blue torso="+blue+", red torso="+red);
         }
         passed=true;
-        saveEvidence(pixels);
+        saveEvidence(pixels,"uniforms-render.png");
         System.out.println("UNIFORM_RENDER_OK: blue torso="+blue+", red torso="+red);
     }
-    private void saveEvidence(ByteBuffer pixels) {
+    private void saveEvidence(ByteBuffer pixels,String file) {
         int width=camera.getWidth(), height=camera.getHeight();
         BufferedImage evidence=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
         for(int y=0;y<height;y++)for(int x=0;x<width;x++) {
@@ -58,7 +63,7 @@ final class UniformRenderCheck implements SceneProcessor {
             evidence.setRGB(x,height-1-y,0xff000000|(r<<16)|(g<<8)|b);
         }
         try {
-            File output=new File(".runtime/uniforms-render.png");
+            File output=new File(".runtime/"+file);
             output.getParentFile().mkdirs();
             if(!ImageIO.write(evidence,"png",output))throw new IOException("PNG writer not found");
         } catch(IOException exception) {

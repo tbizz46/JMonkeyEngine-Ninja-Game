@@ -19,10 +19,12 @@ Both use the ninja model shipped with the SDK.
 | Key | Action |
 | --- | --- |
 | W / A / S / D or arrow keys | Move across the 3D arena |
-| J | Swing sword |
+| J | Two-handed sword strike |
 | L | Kick |
 | K (hold) | Block |
 | Space | Jump |
+| F + direction | Flip in that WASD/arrow direction |
+| F alone | Flip in the current facing direction |
 | Escape or P | Pause / resume |
 | Enter | Start, resume, or rematch |
 | Q | Quit from start, pause, or results |
@@ -123,3 +125,12 @@ are shown under the controls. Pause and focus loss pause music and stop
 active effects. Rematch keeps your choices for this session.
 
 See [issue 8 code changes and checks](docs/ISSUE_8_AUDIO_CHANGES.md).
+
+## Two-handed swords and directional flips
+
+Both ninjas now use a two-handed sword strike. Hold a WASD/arrow direction
+and press F to flip that way. F without a direction follows current facing.
+The flip uses the bundled backflip animation, travels a fixed distance,
+and has a short cooldown. You can pause it and resume it.
+
+See [issue 10 code changes, checks, and images](docs/ISSUE_10_FIGHT_FEATURES.md).

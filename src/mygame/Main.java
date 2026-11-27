@@ -31,18 +31,21 @@ public class Main extends SimpleApplication {
     private Node overlay=new Node("Start and pause panel");
     private final boolean smoke=Boolean.getBoolean("duel.smoke");
     private int smokeStage;
+    private float smokeFlipRemaining;
     private UniformRenderCheck uniformRenderCheck;
     private GameAudio gameAudio;
     private BitmapText audioHelp;
     private boolean aiSawAttack, aiGuard;
     private class Avatar {
         Node root=new Node(); Spatial model; AnimComposer composer;
+        NinjaCombatPose combatPose;
         String animation="";
         Avatar(String name, ColorRGBA color, boolean player) {
             root.setName(name); model=assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
             NinjaUniform.apply(assetManager, model, player);
             model.setLocalScale(.0162f); root.attachChild(model);
             composer=findComposer(model);
+            combatPose=NinjaCombatPose.attach(model);
             if(composer==null) throw new IllegalStateException("Ninja animation is missing");
             Geometry ring=shape("Fighter marker",new Torus(12,64,.025f,.62f),unlit(color));
             ring.rotate(FastMath.HALF_PI,0,0); ring.setLocalTranslation(0,.045f,0);root.attachChild(ring);
@@ -54,10 +57,15 @@ public class Main extends SimpleApplication {
             composer.setGlobalSpeed(speed);
         }
         void sync(DuelState.Fighter f) {
+            combatPose.setStrike(f.hp>0&&f.flip<=0&&f.attack>0&&f.strike==DuelState.Strike.SWORD,
+                    1-f.attack/f.strike.duration);
+            combatPose.setFlipping(f.flip>0);
             if(duel.paused){composer.setGlobalSpeed(0);return;}
-            root.setLocalTranslation(f.x,f.y,f.z);
+            // Backflip supplies its own vertical pose; game state supplies ground travel and hit height.
+            root.setLocalTranslation(f.x,f.flip>0?0:f.y,f.z);
             root.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.atan2(-f.facingX,-f.facingZ),Vector3f.UNIT_Y));
             if(f.hp==0) play("Death1",deathTime>.56f?0:1);
+            else if(f.flip>0) play("Backflip",1/DuelState.FLIP_TIME);
             else if(f.attack>0) {
                 float clipLength=(float)composer.getAnimClip(f.strike.animation).getLength();
                 play(f.strike.animation,clipLength/f.strike.duration);
@@ -94,12 +102,14 @@ public class Main extends SimpleApplication {
         bind("Kick",KeyInput.KEY_L);bind("Attack",KeyInput.KEY_J);bind("Guard",KeyInput.KEY_K);bind("Jump",KeyInput.KEY_SPACE);
         bind("Confirm",KeyInput.KEY_RETURN);bind("Pause",KeyInput.KEY_ESCAPE,KeyInput.KEY_P);bind("Quit",KeyInput.KEY_Q);
         bind("Music",KeyInput.KEY_M);bind("Effects",KeyInput.KEY_N);
+        bind("Flip",KeyInput.KEY_F);
         inputManager.addListener((com.jme3.input.controls.ActionListener)(name,down,tpf)->{
             if(smoke)return; // Keep the automated sequence independent of live keyboard input.
             switch(name) {
                 case "Left":left=down;break;case "Right":right=down;break;case "Guard":guard=down;break;
                 case "Forward":forward=down;break;case "Back":back=down;break;
                 case "Kick":if(down)duel.kick(duel.player);break;
+                case "Flip":if(down)duel.flip(duel.player,(right?1:0)-(left?1:0),(back?1:0)-(forward?1:0));break;
                 case "Attack":if(down)duel.attack(duel.player);break;
                 case "Jump":if(down)duel.jump(duel.player);break;
                 case "Music":if(down)gameAudio.toggleMusic();break;
@@ -108,7 +118,7 @@ public class Main extends SimpleApplication {
                 case "Pause":if(down&&duel.started&&!duel.over){duel.paused=!duel.paused;clearInput();}break;
                 case "Quit":if(down&&(!duel.started||duel.paused||duel.over))stop();break;
             }
-        },"Left","Right","Forward","Back","Kick","Guard","Attack","Jump","Music","Effects","Confirm","Pause","Quit");
+        },"Left","Right","Forward","Back","Kick","Flip","Guard","Attack","Jump","Music","Effects","Confirm","Pause","Quit");
         // Losing focus pauses the match, so a hidden window cannot cost a round.
         System.out.println("READY: Night Ninja Duel loaded");
     }
@@ -166,7 +176,7 @@ public class Main extends SimpleApplication {
         pBar=panel("Blue health",40,h-104,400,16,new ColorRGBA(.12f,.65f,1,1),guiNode);eBar=panel("Red health",w-440,h-104,400,16,new ColorRGBA(.95f,.2f,.3f,1),guiNode);
         status=text("",17,white,0,h-150,guiNode);
         panel("Control strip",0,0,w,76,new ColorRGBA(.025f,.045f,.08f,1),guiNode);
-        help=text("WASD / Arrows  Move    J  Sword    L  Kick    K  Block    SPACE  Jump    ESC  Pause",17,white,0,53,guiNode);centerText(help,w/2);
+        help=text("WASD / Arrows  Move   J  Two-hand sword   L  Kick   F  Flip   K  Block   SPACE  Jump   ESC  Pause",17,white,0,53,guiNode);centerText(help,w/2);
         audioHelp=text(gameAudio.help(),14,muted,0,24,guiNode);centerText(audioHelp,w/2);
         panel("Menu panel",w/2-330,h/2-112,660,280,new ColorRGBA(.035f,.065f,.11f,1),overlay);
         center=text("",34,white,0,h/2+94,overlay);centerSmall=text("",18,white,0,h/2+36,overlay);guiNode.attachChild(overlay);
@@ -179,21 +189,24 @@ public class Main extends SimpleApplication {
         status.setText(duel.messageTime>0?duel.message:duel.active()?"Circle your opponent. Get close to kick.":"");centerText(status,cam.getWidth()/2);
         boolean show=!duel.started||duel.paused||duel.over;overlay.setCullHint(show?Spatial.CullHint.Never:Spatial.CullHint.Always);
         if(show){center.setText(!duel.started?"THE FIELD AWAITS":duel.over?(duel.player.hp>0?"YOU WIN":"CPU WINS"):"PAUSED");
-            centerSmall.setText(!duel.started?"You are BLUE. Defeat the RED ninja.\n\nENTER  Start fight\nWASD / Arrows  Move  |  J  Sword  |  L  Kick\nK  Hold to block  |  SPACE  Jump\n\nQ  Quit":duel.over?"ENTER  Rematch\n\nTip: hold K to block, then strike when the sword drops.\n\nQ  Quit":"ENTER or ESC  Resume\n\nYour round is safe while paused.\n\nQ  Quit");centerSmall.setSize(duel.started?18:17);centerText(center,cam.getWidth()/2);centerText(centerSmall,cam.getWidth()/2);}
+            centerSmall.setText(!duel.started?"You are BLUE. Defeat the RED ninja.\n\nENTER  Start fight\nWASD / Arrows  Move  |  J  Two-hand sword  |  L  Kick\nK  Hold to block  |  SPACE  Jump\nHold a direction + F  Flip  |  F alone  Facing\n\nQ  Quit":duel.over?"ENTER  Rematch\n\nTip: hold K to block, then strike when the sword drops.\n\nQ  Quit":"ENTER or ESC  Resume\n\nYour round is safe while paused.\n\nQ  Quit");centerSmall.setSize(duel.started?18:17);centerText(center,cam.getWidth()/2);centerText(centerSmall,cam.getWidth()/2);}
     }
     @Override public void simpleUpdate(float tpf){
         if(blue==null)return;float dt=Math.min(tpf,.04f);elapsed+=dt;
         duel.player.moving=false;duel.enemy.moving=false;
         if(duel.active()){
-            duel.player.block=guard&&duel.player.attack<=0&&duel.player.y==0;
+            duel.player.block=guard&&duel.player.attack<=0&&duel.player.flip<=0&&duel.player.y==0;
             duel.move(duel.player,(right?1:0)-(left?1:0),(back?1:0)-(forward?1:0),dt);
             float distance=duel.distance();aiTimer-=dt;
             if(duel.player.attack>0&&!aiSawAttack) {
                 aiSawAttack=true;aiGuard=random.nextFloat()<.35f;
+                if(!smoke&&distance<3.1f&&random.nextFloat()<.3f){
+                    duel.flip(duel.enemy,duel.enemy.x-duel.player.x,duel.enemy.z-duel.player.z);aiGuard=false;
+                }
             } else if(duel.player.attack<=0) { aiSawAttack=false;aiGuard=false; }
             float attackAge=duel.player.strike.duration-duel.player.attack;
             duel.enemy.block=!smoke&&aiGuard&&distance<2.6f&&duel.player.attack>0
-                    &&attackAge>.12f&&duel.enemy.attack<=0;
+                    &&attackAge>.12f&&duel.enemy.attack<=0&&duel.enemy.flip<=0;
             if(distance>1.65f) {
                 float dx=duel.player.x-duel.enemy.x,dz=duel.player.z-duel.enemy.z;
                 duel.move(duel.enemy,dx/distance,dz/distance,dt);
@@ -256,12 +269,46 @@ public class Main extends SimpleApplication {
             if(!duel.over)throw new AssertionError("Kick victory failed");
             System.out.println("SMOKE_KICK_VICTORY");resetRound();smokeStage++;
         }
-        if(elapsed>5){
+        if(elapsed>4.5f&&smokeStage==5){
+            if(duel.player.hp!=100||duel.enemy.hp!=100)throw new AssertionError("Rematch failed");
+            duel.player.x=-.8f;duel.enemy.x=.8f;duel.player.z=duel.enemy.z=0;
+            duel.attack(duel.player);duel.attack(duel.enemy);aiTimer=10;smokeStage++;
+        }
+        if(elapsed>5&&smokeStage==6){
+            if(!blue.animation.equals("Attack3")||!red.animation.equals("Attack3")
+                    ||blue.combatPose.handSpacing()>10||red.combatPose.handSpacing()>10)
+                throw new AssertionError("Two-hand grip failed");
+            Vector3f center=new Vector3f((duel.player.x+duel.enemy.x)/2,0,0);
+            cam.setLocation(center.add(0,5,7));cam.lookAt(center.add(0,1.5f,0),Vector3f.UNIT_Y);
+            uniformRenderCheck.captureEvidence("issue-10-two-hand-strike.png");
+            System.out.println("TWO_HAND_GRIP_OK: player="+blue.combatPose.handSpacing()+", cpu="+red.combatPose.handSpacing());smokeStage++;
+        }
+        if(elapsed>5.5f&&smokeStage==7){
+            duel.player.x=-4;duel.enemy.x=4;duel.player.z=duel.enemy.z=0;
+            duel.player.attack=duel.enemy.attack=0;duel.player.stun=duel.enemy.stun=0;
+            duel.flip(duel.player,0,-1);duel.flip(duel.enemy,1,1);aiTimer=10;smokeStage++;
+        }
+        if(elapsed>5.9f&&smokeStage==8){
+            if(duel.player.flip<=0||duel.enemy.flip<=0||!blue.animation.equals("Backflip")||!red.animation.equals("Backflip")
+                    ||duel.player.z>=-.5f||duel.enemy.x<=4.5f||duel.enemy.z<=.5f)
+                throw new AssertionError("Directional flip failed");
+            uniformRenderCheck.captureEvidence("issue-10-directional-flips.png");smokeStage++;
+        }
+        if(elapsed>6.05f&&smokeStage==9){smokeFlipRemaining=duel.player.flip;duel.paused=true;smokeStage++;}
+        if(elapsed>6.5f&&smokeStage==10){
+            if(Math.abs(duel.player.flip-smokeFlipRemaining)>.0001f||gameAudio.musicPlaying())throw new AssertionError("Flip pause failed");
+            duel.paused=false;smokeStage++;
+        }
+        if(elapsed>7.4f&&smokeStage==11){
+            if(duel.player.flip>0||duel.enemy.flip>0||duel.player.y!=0||duel.enemy.y!=0)throw new AssertionError("Flip landing failed");
+            System.out.println("DIRECTIONAL_FLIPS_OK: both actors, travel, animation, pause/resume, landing");resetRound();smokeStage++;
+        }
+        if(elapsed>8&&smokeStage==12){
             if(!gameAudio.musicPlaying())throw new AssertionError("Music did not resume for rematch");
             System.out.println("AUDIO_OK: native output, music play/pause/resume, fight effects="+gameAudio.effectsPlayed());
             if(!uniformRenderCheck.passed())throw new AssertionError("Uniform render check did not run");
             if(duel.player.hp!=100||duel.enemy.hp!=100)throw new AssertionError("Rematch failed");
-            System.out.println("SMOKE_OK: 3D arena, both kick animations, combat, pause, victory, rematch");stop();
+            System.out.println("SMOKE_OK: two-hand swords, directional flips, 3D arena, kicks, audio, pause, victory, rematch");stop();
         }
     }
 }

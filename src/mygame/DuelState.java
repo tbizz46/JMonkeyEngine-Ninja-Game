@@ -6,15 +6,16 @@ import java.util.List;
 
 /** Combat rules for a bounded 3D arena, independent of rendering and input. */
 public final class DuelState {
-    public enum Event { SWORD, KICK, HIT, BLOCK, JUMP, LAND }
+    public enum Event { SWORD, KICK, HIT, BLOCK, JUMP, FLIP, LAND }
     private final ArrayDeque<Event> events = new ArrayDeque<>();
     public List<Event> drainEvents() {
         List<Event> result=new ArrayList<>(events); events.clear(); return result;
     }
     public static final float RANGE = 2.5f, ATTACK_TIME = .72f, HIT_TIME = .28f;
     public static final float ARENA_X = 9, ARENA_Z = 5, BODY_GAP = 1.25f;
+    public static final float FLIP_TIME=.85f, FLIP_DISTANCE=3.6f, FLIP_HEIGHT=2.0f, FLIP_COOLDOWN=1.35f;
     public enum Strike {
-        SWORD(ATTACK_TIME, HIT_TIME, RANGE, .93f, 14, 3, "Attack1"),
+        SWORD(ATTACK_TIME, HIT_TIME, RANGE, .93f, 14, 3, "Attack3"),
         KICK(.58f, .22f, 1.9f, .72f, 10, 2, "Kick");
         public final float duration, hitTime, range, cooldown;
         public final int damage, blockDamage;
@@ -29,6 +30,7 @@ public final class DuelState {
     public static final class Fighter {
         public float x, z, y, vy, attack, cooldown, stun;
         public float facingX, facingZ;
+        public float flip, flipCooldown, flipX, flipZ;
         public int hp=100;
         public boolean block, hit, moving;
         public Strike strike=Strike.SWORD;
@@ -52,7 +54,7 @@ public final class DuelState {
     public void attack(Fighter f) { startStrike(f,Strike.SWORD); }
     public void kick(Fighter f) { if(f.y==0) startStrike(f,Strike.KICK); }
     private void startStrike(Fighter f, Strike strike) {
-        if(active() && f.cooldown<=0 && f.stun<=0 && f.attack<=0 && !f.block) {
+        if(active() && f.cooldown<=0 && f.stun<=0 && f.attack<=0 && f.flip<=0 && !f.block) {
             face(f,f==player?enemy:player);
             f.strike=strike; f.attack=strike.duration;
             f.cooldown=strike.cooldown; f.hit=false;
@@ -60,12 +62,27 @@ public final class DuelState {
         }
     }
     public void jump(Fighter f) {
-        if(active() && f.y==0 && f.attack<=0 && !f.block && f.stun<=0) {
+        if(active() && f.y==0 && f.vy==0 && f.flip<=0 && f.attack<=0 && !f.block && f.stun<=0) {
             f.vy=6.6f; events.add(Event.JUMP);
         }
     }
+    public void flip(Fighter f,float dx,float dz) {
+        if(!active()||f.flip>0)return;
+        if(f.y>0||f.vy!=0){flipHint(f,"Land before flipping");return;}
+        if(f.flipCooldown>0){flipHint(f,"Flip ready in "+(float)(Math.ceil(f.flipCooldown*10)/10)+" s");return;}
+        if(f.block){flipHint(f,"Release K to flip");return;}
+        if(f.attack>0){flipHint(f,"Finish the strike before flipping");return;}
+        if(f.stun>0){flipHint(f,"Recover from the hit before flipping");return;}
+        float length=(float)Math.hypot(dx,dz);
+        if(length<.001f){dx=f.facingX;dz=f.facingZ;length=(float)Math.hypot(dx,dz);}
+        if(length<.001f){dx=1;dz=0;length=1;}
+        f.flipX=dx/length;f.flipZ=dz/length;f.flip=FLIP_TIME;f.flipCooldown=FLIP_COOLDOWN;
+        // The bundled move is a backflip: turn so its travel follows the requested direction.
+        f.facingX=-f.flipX;f.facingZ=-f.flipZ;events.add(Event.FLIP);
+    }
+    private void flipHint(Fighter f,String hint) { if(f==player){message=hint;messageTime=.7f;} }
     public void move(Fighter f, float dx, float dz, float dt) {
-        if(active() && f.attack<=0 && f.stun<=0) {
+        if(active() && f.attack<=0 && f.flip<=0 && f.stun<=0) {
             float length=(float)Math.hypot(dx,dz);
             if(length>1) { dx/=length; dz/=length; }
             float oldX=f.x, oldZ=f.z;
@@ -83,6 +100,7 @@ public final class DuelState {
         if(length>.001f) { a.facingX=(b.x-a.x)/length; a.facingZ=(b.z-a.z)/length; }
     }
     private void separateBodies() {
+        if(Math.abs(player.y-enemy.y)>1.1f)return;
         float dx=enemy.x-player.x, dz=enemy.z-player.z, length=distance();
         if(length>=BODY_GAP) return;
         float nx=length>.001f?dx/length:1, nz=length>.001f?dz/length:0;
@@ -100,7 +118,14 @@ public final class DuelState {
         messageTime=Math.max(0,messageTime-dt);
         for(Fighter f:new Fighter[]{player,enemy}) {
             f.cooldown=Math.max(0,f.cooldown-dt); f.stun=Math.max(0,f.stun-dt);
-            if(f.y>0 || f.vy>0) {
+            f.flipCooldown=Math.max(0,f.flipCooldown-dt);
+            if(f.flip>0) {
+                float advance=Math.min(dt,f.flip);f.flip=Math.max(0,f.flip-dt);
+                float travel=FLIP_DISTANCE*advance/FLIP_TIME;
+                f.x+=f.flipX*travel;f.z+=f.flipZ*travel;clamp(f);
+                f.y=FLIP_HEIGHT*(float)Math.sin(Math.PI*(1-f.flip/FLIP_TIME));
+                if(f.flip==0){f.y=0;f.vy=0;events.add(Event.LAND);}
+            } else if(f.y>0 || f.vy>0) {
                 f.vy-=17*dt; f.y=Math.max(0,f.y+f.vy*dt);
                 if(f.y==0) { f.vy=0; events.add(Event.LAND); }
             }
@@ -108,8 +133,8 @@ public final class DuelState {
         }
         separateBodies();
         // Idle fighters track their target. A strike keeps its launch direction.
-        if(player.attack<=0) face(player,enemy);
-        if(enemy.attack<=0) face(enemy,player);
+        if(player.attack<=0&&player.flip<=0) face(player,enemy);
+        if(enemy.attack<=0&&enemy.flip<=0) face(enemy,player);
         hit(player,enemy); if(!over) hit(enemy,player);
     }
     private void hit(Fighter a,Fighter b) {

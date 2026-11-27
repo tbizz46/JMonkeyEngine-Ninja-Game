@@ -60,12 +60,14 @@ public final class GameAudioTest {
         check(duel.drainEvents().equals(List.of(DuelState.Event.SWORD)),"Miss has swing but no impact");
         duel=round();duel.jump(duel.player);advance(duel,1.2f);
         check(duel.drainEvents().equals(List.of(DuelState.Event.JUMP,DuelState.Event.LAND)),"One jump and landing cue");
+        output=new FakeBackend();sound=new GameAudio(output);duel=round();duel.flip(duel.player,0,1);advance(duel,.95f);sound.sync(duel);
+        check(output.cues.equals(List.of(GameAudio.Cue.ROUND_START,GameAudio.Cue.FLIP,GameAudio.Cue.LAND)),"Flip and landing cues routed once");
         GameAudio silent=GameAudio.unavailable();duel=round();duel.kick(duel.player);silent.sync(duel);
         check(!silent.available()&&duel.drainEvents().isEmpty(),"No-device path consumes events safely");
         silent.toggleMusic();silent.toggleEffects();silent.close();
 
         DesktopAssetManager assets=new DesktopAssetManager(true);
-        List<String> files=new ArrayList<>();for(GameAudio.Cue cue:GameAudio.Cue.values())files.add(cue.file);
+        List<String> files=new ArrayList<>();for(GameAudio.Cue cue:GameAudio.Cue.values())if(!files.contains(cue.file))files.add(cue.file);
         files.add("night_field_music");
         for(String file:files) {
             AudioData audio=assets.loadAsset(new AudioKey("Sounds/"+file+".wav",false));

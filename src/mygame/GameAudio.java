@@ -10,7 +10,7 @@ import java.util.List;
 /** Routes confirmed game events to audio and keeps mute/pause state in one place. */
 public final class GameAudio {
     public enum Cue {
-        SWORD("sword"), KICK("kick"), HIT("hit"), BLOCK("block"), JUMP("jump"), LAND("land"),
+        SWORD("sword"), KICK("kick"), HIT("hit"), BLOCK("block"), JUMP("jump"), FLIP("jump"), LAND("land"),
         ROUND_START("round_start"), VICTORY("victory"), DEFEAT("defeat");
         final String file;
         Cue(String file) { this.file=file; }
